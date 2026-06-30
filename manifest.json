@@ -1,0 +1,24 @@
+{
+  "name": "習慣養成 · Streaks",
+  "short_name": "習慣養成",
+  "description": "個人習慣追蹤：目標倒數、專注計時、模式、時間軸、待辦日曆、每日回顧。",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f6f4",
+  "theme_color": "#f5f6f4",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192'%3E%3Crect width='192' height='192' rx='42' fill='%2335c85a'/%3E%3Cpath d='M58 98 l26 26 l50 -58' fill='none' stroke='white' stroke-width='16' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'%3E%3Crect width='512' height='512' rx='112' fill='%2335c85a'/%3E%3Cpath d='M154 262 l70 70 l134 -156' fill='none' stroke='white' stroke-width='42' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
