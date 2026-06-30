@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#f5f6f4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>習慣養成 · Streaks</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  :root{
+    --bg:#f5f6f4; --bg-soft:#ecefe9; --card:#ffffff; --card-2:#f0f3ed;
+    --line:#e6e9e2; --line-soft:#eef1ea;
+    --txt:#1f242b; --txt-dim:#69707a; --txt-faint:#a2a8af;
+    --accent:#35c85a; --accent2:#74d98a; --accent-soft:#35c85a1f; --glow:#35c85a;
+    --green:#35c85a; --amber:#ff9f43; --red:#ff5d6c; --purple:#b78bff;
+    --ring-bg:#e8ebe6; --nav-bg:rgba(255,255,255,.9);
+    --radius:20px; --radius-sm:14px;
+    --shadow:0 6px 20px rgba(40,50,45,.08);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI Variable","Segoe UI","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:var(--font)}
+  body{padding-bottom:90px;max-width:680px;margin:0 auto;min-height:100vh;
+       background:radial-gradient(120% 55% at 50% -8%, color-mix(in srgb,var(--glow) 13%, transparent), transparent 60%), var(--bg);transition:background .5s}
+  ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+
+  header{padding:20px 20px 6px;position:sticky;top:0;z-index:20;background:linear-gradient(180deg,var(--bg) 74%,transparent)}
+  .head-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .greet{font-size:13px;color:var(--txt-dim);letter-spacing:.3px}
+  .date-big{font-size:23px;font-weight:800;margin-top:2px;letter-spacing:.2px}
+  .date-sub{font-size:11.5px;color:var(--txt-faint);margin-top:2px}
+  .lvchip{flex-shrink:0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px 12px;min-width:118px;cursor:pointer;box-shadow:var(--shadow)}
+  .lvchip .lvtop{display:flex;align-items:center;justify-content:space-between;font-size:12px;margin-bottom:6px}
+  .lvchip .lvtop b{color:var(--accent);font-weight:800}.lvchip .lvtop span{color:var(--txt-faint);font-size:10px}
+  .xpbar{height:6px;border-radius:6px;background:var(--ring-bg);overflow:hidden}
+  .xpbar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .6s cubic-bezier(.2,.8,.2,1)}
+
+  main{padding:6px 16px 20px}
+  .view{display:none;animation:fade .25s ease}.view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .section-title{display:flex;align-items:center;justify-content:space-between;margin:18px 4px 10px}
+  .section-title h2{font-size:15px;font-weight:800;margin:0;letter-spacing:.3px}
+  .section-title h2 span{color:var(--txt-faint);font-weight:400;font-size:12px;margin-left:6px}
+  .title-btns{display:flex;gap:8px;align-items:center}
+  .card{background:var(--card);border:1px solid var(--line-soft);border-radius:var(--radius);box-shadow:var(--shadow)}
+
+  .hero{display:flex;align-items:center;gap:16px;padding:18px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(80% 120% at 90% -20%,color-mix(in srgb,var(--glow) 14%,transparent),transparent 55%);pointer-events:none}
+  .ring-wrap{position:relative;width:100px;height:100px;flex-shrink:0}.ring-wrap svg{transform:rotate(-90deg)}
+  .ring-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring-num .mascot{font-size:30px;line-height:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.18))}
+  .ring-num b{font-size:15px;font-weight:800;margin-top:1px}
+  .hero-info{flex:1;position:relative;z-index:1}.hero-info .h{font-size:17px;font-weight:800}
+  .hero-info .s{font-size:12.5px;color:var(--txt-dim);margin-top:4px;line-height:1.5}
+  .pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+  .pill{display:inline-flex;align-items:center;gap:5px;background:var(--card-2);border:1px solid var(--line);padding:4px 10px;border-radius:20px;font-size:11.5px;color:var(--txt-dim)}
+  .pill.fire{color:var(--amber);border-color:#ff9f4333}.pill.goal{color:var(--accent);border-color:var(--accent-soft);cursor:pointer}
+
+  .mode-bar{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 2px}
+  .mode-chip{flex-shrink:0;padding:7px 13px;border-radius:20px;background:var(--card-2);border:1px solid var(--line);font-size:12.5px;cursor:pointer;color:var(--txt-dim);white-space:nowrap}
+  .mode-chip.sel{background:var(--accent-soft);border-color:var(--accent);color:var(--txt);font-weight:700}
+  .mode-chip.add{color:var(--accent);font-weight:700}
+  .seg{display:inline-flex;background:var(--card-2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .seg div{padding:5px 11px;font-size:12px;cursor:pointer;color:var(--txt-dim)}
+  .seg div.sel{background:var(--accent-soft);color:var(--txt);font-weight:700}
+  .slot-head{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--txt-dim);margin:14px 4px 8px}
+
+  .focus-list{padding:6px 8px 8px}
+  .focus-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--radius-sm)}
+  .focus-check{width:24px;height:24px;border-radius:8px;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.18s}
+  .focus-check.done{background:var(--green);border-color:var(--green)}.focus-check.done::after{content:"✓";color:#fff;font-weight:800;font-size:14px}
+  .focus-text{flex:1;font-size:14.5px}.focus-text.done{color:var(--txt-faint);text-decoration:line-through}
+  .focus-del{color:var(--txt-faint);font-size:18px;padding:4px 8px;cursor:pointer;opacity:.6}
+  .focus-empty{padding:18px 16px;color:var(--txt-faint);font-size:13px;text-align:center;line-height:1.7}
+  .focus-add{display:flex;gap:8px;padding:8px 12px 12px}
+  .focus-add input{flex:1;background:var(--bg-soft);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:11px 12px;font-size:14px;font-family:var(--font)}
+  .focus-add input:focus{outline:none;border-color:var(--accent)}.focus-add input:disabled{opacity:.4}
+
+  .habit{display:flex;align-items:center;gap:12px;padding:14px 15px;border-bottom:1px solid var(--line-soft)}.habit:last-child{border-bottom:none}
+  .h-emoji{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+  .h-main{flex:1;min-width:0}.h-name{font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .h-meta{font-size:11.5px;color:var(--txt-faint);margin-top:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .h-meta .rem{color:var(--accent)}.h-meta .gl{color:var(--purple)}
+  .streak{color:var(--amber);font-weight:700}
+  .week-strip{display:flex;gap:5px;margin-top:7px}.wk-dot{width:13px;height:13px;border-radius:4px;background:var(--ring-bg)}
+  .h-right{display:flex;align-items:center;gap:9px;flex-shrink:0}
+  .h-timer{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--bg-soft);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;color:var(--txt-dim)}
+  .h-check{width:36px;height:36px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .18s,background .18s;font-size:17px;color:transparent}
+  .h-check.done::after{content:"✓";color:#fff;font-weight:800}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.3)}100%{transform:scale(1)}}.pop{animation:pop .4s ease}
+  .counter{display:flex;align-items:center;gap:7px;flex-shrink:0}
+  .cbtn{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--bg-soft);color:var(--txt);font-size:19px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}
+  .cval{min-width:50px;text-align:center;font-size:14px;font-weight:800}.cval small{display:block;font-size:9.5px;color:var(--txt-faint);font-weight:500;margin-top:1px}.cval.done{color:var(--green)}
+
+  .goal-card{padding:16px;margin-bottom:12px}
+  .goal-head{display:flex;align-items:center;gap:12px}
+  .goal-emoji{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:23px;flex-shrink:0}
+  .goal-name{font-size:15.5px;font-weight:800}.goal-sub{font-size:11.5px;color:var(--txt-faint);margin-top:3px}
+  .dday{flex-shrink:0;text-align:center;background:var(--accent-soft);border-radius:12px;padding:6px 11px}
+  .dday b{display:block;font-size:17px;font-weight:900;color:var(--accent);line-height:1}.dday span{font-size:9.5px;color:var(--txt-dim)}
+  .goal-prog{margin-top:13px}.goal-prog .pbar{height:9px;border-radius:9px;background:var(--ring-bg);overflow:hidden}
+  .goal-prog .pbar i{display:block;height:100%;border-radius:9px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+  .goal-prog .pl{display:flex;justify-content:space-between;font-size:11px;color:var(--txt-faint);margin-top:6px}
+
+  /* Calendar */
+  .cal-nav{display:flex;align-items:center;justify-content:space-between;margin:4px 2px 12px}
+  .cal-nav .cb{padding:7px 14px;border-radius:10px;background:var(--card-2);border:1px solid var(--line);cursor:pointer;font-size:15px}
+  .cal-nav b{font-size:16px;font-weight:800}
+  .cal-wd{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:5px}
+  .cal-wd span{text-align:center;font-size:10.5px;color:var(--txt-faint)}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .cal-cell{aspect-ratio:1;border-radius:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;font-size:13px;border:1.5px solid transparent;background:var(--card)}
+  .cal-cell.today{border-color:var(--accent)}
+  .cal-cell .cd{font-weight:600}.cdot{width:5px;height:5px;border-radius:50%;background:var(--purple);position:absolute;bottom:6px}
+  .cal-blank{aspect-ratio:1}
+  .cal-legend{display:flex;gap:14px;justify-content:center;margin-top:14px;font-size:11px;color:var(--txt-faint)}
+  .cal-legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .stat-box{padding:16px;border-radius:var(--radius)}.stat-box .n{font-size:26px;font-weight:800}.stat-box .l{font-size:11.5px;color:var(--txt-dim);margin-top:3px}
+  .heat-card{padding:16px}.heat-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .heat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(13px,1fr));gap:4px}.heat-cell{aspect-ratio:1;border-radius:3px;background:var(--ring-bg)}
+
+  .lvbig{padding:20px;text-align:center;position:relative;overflow:hidden}
+  .lvbig::before{content:"";position:absolute;inset:0;background:radial-gradient(70% 100% at 50% 0,color-mix(in srgb,var(--glow) 18%,transparent),transparent 60%)}
+  .lvbig .lvl{font-size:13px;color:var(--txt-dim);position:relative}
+  .lvbig .lvn{font-size:46px;font-weight:900;line-height:1.1;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;position:relative}
+  .lvbig .xptxt{font-size:12px;color:var(--txt-faint);margin:8px 0 10px;position:relative}.lvbig .xpbar{max-width:280px;margin:0 auto;height:9px;position:relative}
+  .badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+  .badge{background:var(--card);border:1px solid var(--line-soft);border-radius:16px;padding:15px 8px;text-align:center}
+  .badge.locked{opacity:.4;filter:grayscale(1)}.badge.unlocked{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+  .badge .bic{font-size:30px;line-height:1}.badge .bn{font-size:11.5px;font-weight:700;margin-top:7px}.badge .bd{font-size:10px;color:var(--txt-faint);margin-top:3px;line-height:1.35}
+  .theme-row{display:flex;gap:12px;flex-wrap:wrap;padding:4px 2px}
+  .theme-opt{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
+  .theme-dot{width:40px;height:40px;border-radius:50%;border:3px solid transparent;transition:.15s}.theme-opt.sel .theme-dot{border-color:var(--txt);transform:scale(1.06)}.theme-opt .tn{font-size:10.5px;color:var(--txt-faint)}
+
+  .idea{display:flex;align-items:flex-start;gap:11px;padding:12px 14px;border-bottom:1px solid var(--line-soft)}.idea:last-child{border-bottom:none}
+  .idea-dot{width:7px;height:7px;border-radius:50%;background:var(--purple);margin-top:7px;flex-shrink:0}
+  .idea-body{flex:1}.idea-text{font-size:14px;line-height:1.5}.idea-time{font-size:11px;color:var(--txt-faint);margin-top:3px}
+  .idea-act{display:flex;gap:6px;flex-shrink:0}.idea-act span{font-size:11px;color:var(--txt-faint);padding:4px 8px;border:1px solid var(--line);border-radius:8px;cursor:pointer}.idea-act span.promote{color:var(--accent);border-color:var(--accent-soft)}
+
+  .mood-row{display:flex;gap:8px;justify-content:space-between;margin-bottom:12px}
+  .mood{font-size:28px;cursor:pointer;filter:grayscale(1);opacity:.45;transition:.15s}.mood.sel{filter:none;opacity:1;transform:scale(1.18)}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);transition:.15s}
+  .btn:active{transform:scale(.97)}.btn.ghost{background:var(--card-2);color:var(--txt);border:1px solid var(--line)}.btn.sm{padding:8px 12px;font-size:12.5px;border-radius:10px}
+  .pillbtn{font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:20px;cursor:pointer;border:1px solid var(--line);background:var(--card-2);color:var(--txt);display:inline-flex;align-items:center;gap:5px}
+  .add-circle{font-size:20px;color:#fff;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent2));width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+  .empty{text-align:center;padding:40px 24px;color:var(--txt-faint)}.empty .ic{font-size:44px;margin-bottom:12px}.empty .t{font-size:15px;color:var(--txt-dim);margin-bottom:6px}.empty .d{font-size:13px;line-height:1.7;margin-bottom:16px}
+
+  nav{position:fixed;bottom:0;left:0;right:0;max-width:680px;margin:0 auto;background:var(--nav-bg);backdrop-filter:blur(16px);border-top:1px solid var(--line);display:flex;padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:30}
+  .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--txt-faint);cursor:pointer;font-size:10px}.nav-btn.active{color:var(--accent)}.nav-btn .ni{font-size:19px;line-height:1}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(20,25,22,.5);backdrop-filter:blur(4px);z-index:50;display:none;align-items:flex-end;justify-content:center}.modal-bg.show{display:flex}
+  .modal{background:var(--card);border:1px solid var(--line);border-radius:24px 24px 0 0;width:100%;max-width:680px;padding:22px 20px calc(22px + env(safe-area-inset-bottom));animation:slideup .28s cubic-bezier(.2,.8,.2,1);max-height:92vh;overflow:auto}
+  @media(min-width:680px){.modal-bg{align-items:center}.modal{border-radius:24px;margin:0 16px}}
+  @keyframes slideup{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+  .modal h3{margin:0 0 16px;font-size:18px}
+  .field{margin-bottom:14px}.field label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:7px}
+  .field input[type=text],.field input[type=number],.field input[type=time],.field input[type=date]{width:100%;background:var(--bg-soft);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:13px 14px;font-size:15px;font-family:var(--font)}
+  .field input:focus{outline:none;border-color:var(--accent)}
+  .emoji-row,.color-row,.freq-row,.type-row,.day-row,.goal-row,.slot-row,.chk-row{display:flex;gap:8px;flex-wrap:wrap}
+  .emoji-opt{width:42px;height:42px;border-radius:12px;background:var(--bg-soft);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer}.emoji-opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+  .color-opt{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent}.color-opt.sel{border-color:var(--txt)}
+  .freq-opt,.type-opt,.goal-opt,.slot-opt,.chk-opt{padding:9px 13px;border-radius:10px;background:var(--bg-soft);border:1px solid var(--line);font-size:13px;cursor:pointer;color:var(--txt-dim)}
+  .freq-opt.sel,.type-opt.sel,.goal-opt.sel,.slot-opt.sel,.chk-opt.sel{border-color:var(--accent);color:var(--txt);background:var(--accent-soft)}
+  .day-opt{width:36px;height:36px;border-radius:10px;background:var(--bg-soft);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;color:var(--txt-dim)}.day-opt.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--txt)}
+  .row2{display:flex;gap:10px}.hint{font-size:11px;color:var(--txt-faint);margin-top:6px;line-height:1.5}
+  .modal-actions{display:flex;gap:10px;margin-top:20px}
+  .danger{color:var(--red);text-align:center;font-size:13px;padding:10px;cursor:pointer;margin-top:4px}
+
+  .tpl-cat{font-size:12px;font-weight:700;color:var(--accent);margin:16px 2px 9px}
+  .tpl-grid{display:flex;flex-wrap:wrap;gap:8px}
+  .tpl-item{display:flex;align-items:center;gap:7px;padding:9px 12px;border-radius:12px;background:var(--bg-soft);border:1px solid var(--line);font-size:13px;cursor:pointer}.tpl-item:active{border-color:var(--accent);background:var(--accent-soft)}.tpl-item .te{font-size:17px}.tpl-item .tt{font-size:9.5px;color:var(--txt-faint);margin-left:2px}
+
+  /* day modal todos */
+  .dt-item{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line-soft)}.dt-item:last-child{border-bottom:none}
+  .dt-text{flex:1;font-size:14px}.dt-text.done{color:var(--txt-faint);text-decoration:line-through}
+  .dt-del{color:var(--txt-faint);font-size:16px;cursor:pointer;padding:2px 6px}
+
+  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--txt);color:var(--card);padding:11px 18px;border-radius:12px;font-size:13px;z-index:80;opacity:0;transition:.3s;pointer-events:none;max-width:90%;text-align:center}.toast.show{opacity:1;bottom:108px}
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:90}
+  .celebrate{position:fixed;inset:0;z-index:85;display:none;align-items:center;justify-content:center;background:rgba(20,25,22,.4);backdrop-filter:blur(3px)}.celebrate.show{display:flex;animation:fade .2s}
+  .ce-card{text-align:center;padding:30px 28px;animation:celIn .5s cubic-bezier(.2,1.3,.4,1)}@keyframes celIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+  .ce-emoji{font-size:74px;line-height:1;filter:drop-shadow(0 6px 18px rgba(0,0,0,.25))}
+  .ce-title{font-size:24px;font-weight:900;margin-top:12px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}.ce-sub{font-size:14px;color:var(--txt-dim);margin-top:8px}
+
+  .timer-overlay{position:fixed;inset:0;z-index:86;display:none;flex-direction:column;align-items:center;justify-content:center;background:var(--bg)}.timer-overlay.show{display:flex;animation:fade .2s}
+  .t-emoji{font-size:54px;line-height:1}.t-name{font-size:18px;font-weight:800;margin-top:10px}
+  .t-clock{font-size:66px;font-weight:900;font-variant-numeric:tabular-nums;margin:16px 0 6px;letter-spacing:1px}.t-hint{font-size:12px;color:var(--txt-faint);margin-bottom:22px}
+  .t-presets{display:flex;gap:8px;justify-content:center;margin-bottom:26px}
+  .tpreset{padding:8px 14px;border-radius:12px;background:var(--card-2);border:1px solid var(--line);cursor:pointer;font-size:13px;color:var(--txt-dim)}.tpreset.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--txt)}
+  .t-controls{display:flex;gap:18px;justify-content:center;align-items:center}
+  .tc-btn{width:56px;height:56px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;font-size:21px;cursor:pointer;color:var(--txt)}
+  .tc-btn.main{width:74px;height:74px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border:none;font-size:27px;box-shadow:0 8px 22px var(--accent-soft)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-top">
+    <div><div class="greet" id="greet">早安</div><div class="date-big" id="dateBig">—</div><div class="date-sub" id="dateSub">—</div></div>
+    <div class="lvchip" onclick="switchView('award')"><div class="lvtop"><b id="lvLabel">Lv.1</b><span id="lvXp">0/100 XP</span></div><div class="xpbar"><i id="lvBar" style="width:0%"></i></div></div>
+  </div>
+</header>
+
+<main>
+  <!-- TODAY -->
+  <section class="view active" id="view-today">
+    <div class="card hero">
+      <div class="ring-wrap"><svg width="100" height="100"><circle cx="50" cy="50" r="42" stroke="var(--ring-bg)" stroke-width="9" fill="none"/><circle id="ring" cx="50" cy="50" r="42" stroke="var(--accent)" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" style="transition:stroke-dashoffset .6s cubic-bezier(.2,.8,.2,1),stroke .4s"/></svg>
+        <div class="ring-num"><div class="mascot" id="mascot">🌱</div><b id="ringPct">0%</b></div></div>
+      <div class="hero-info"><div class="h" id="heroH">開始你的一天</div><div class="s" id="heroS">勾選習慣、累積連續天數，朝目標前進。</div>
+        <div class="pills"><span class="pill fire" id="streakPill">🔥 連續 0 天</span><span class="pill goal" id="goalPill" onclick="switchView('goals')" style="display:none"></span></div></div>
+    </div>
+
+    <div class="mode-bar" id="modeBar"></div>
+
+    <div class="section-title"><h2>今日聚焦 <span>Focus · 最多 3 件</span></h2></div>
+    <div class="card"><div class="focus-list" id="focusList"></div><div class="focus-add"><input id="focusInput" type="text" placeholder="輸入今天最重要的一件事…" maxlength="60"></div></div>
+
+    <div class="section-title"><h2>今日習慣 <span>Habits</span></h2>
+      <div class="title-btns">
+        <div class="seg" id="viewSeg"><div data-vw="list">清單</div><div data-vw="timeline">時間軸</div></div>
+        <span class="pillbtn" onclick="openTemplates()">🎁</span><div class="add-circle" onclick="openHabitModal()">+</div>
+      </div>
+    </div>
+    <div id="todayHabits"></div>
+
+    <div class="section-title"><h2>今日回顧 <span>Reflection · 一句話</span></h2></div>
+    <div class="card" style="padding:14px">
+      <div class="mood-row" id="moodRow"></div>
+      <div class="focus-add" style="padding:0"><input id="reflectInput" type="text" placeholder="今天一句話：學到 / 感受 / 明天想做…" maxlength="120"></div>
+    </div>
+
+    <div class="section-title"><h2>靈感收集箱 <span>不發散</span></h2></div>
+    <div class="card" style="padding:12px">
+      <div class="focus-add" style="padding:0 0 4px"><input id="ideaInput" type="text" placeholder="突然冒出的點子先丟這…" maxlength="140"><button class="btn sm" onclick="addIdea()">收</button></div>
+      <div id="ideaList"></div>
+    </div>
+  </section>
+
+  <!-- HABITS -->
+  <section class="view" id="view-habits">
+    <div class="section-title"><h2>所有習慣 <span>All Habits</span></h2><div class="title-btns"><span class="pillbtn" onclick="openTemplates()">🎁 範本</span><div class="add-circle" onclick="openHabitModal()">+</div></div></div>
+    <div id="allHabits"></div>
+  </section>
+
+  <!-- GOALS -->
+  <section class="view" id="view-goals">
+    <div class="section-title"><h2>目標 <span>Goals · 讓習慣有方向</span></h2><div class="add-circle" onclick="openGoalModal()">+</div></div>
+    <div id="goalList"></div>
+  </section>
+
+  <!-- CALENDAR -->
+  <section class="view" id="view-cal">
+    <div class="section-title"><h2>日曆 <span>Calendar · 待辦與打卡熱度</span></h2></div>
+    <div class="card" style="padding:16px">
+      <div class="cal-nav"><div class="cb" onclick="calStep(-1)">‹</div><b id="calHead">—</b><div class="cb" onclick="calStep(1)">›</div></div>
+      <div class="cal-wd"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend"><span><i style="background:var(--accent)"></i>打卡達成（越深越滿）</span><span><i style="background:var(--purple);border-radius:50%"></i>有待辦</span></div>
+    </div>
+  </section>
+
+  <!-- ACHIEVEMENTS -->
+  <section class="view" id="view-award">
+    <div class="section-title"><h2>等級 <span>Level</span></h2></div>
+    <div class="card lvbig"><div class="lvl">目前等級 Level</div><div class="lvn" id="awLvn">1</div><div class="xptxt" id="awXp">0 / 100 XP</div><div class="xpbar"><i id="awBar" style="width:0%"></i></div></div>
+    <div class="section-title"><h2>成就徽章 <span id="badgeCount">Badges 0/10</span></h2></div>
+    <div class="badge-grid" id="badgeGrid"></div>
+    <div class="section-title"><h2>外觀 <span>Appearance</span></h2></div>
+    <div class="card" style="padding:14px"><div class="freq-row" id="modeRow"><div class="freq-opt" data-m="light" style="flex:1;text-align:center">☀️ 淺色</div><div class="freq-opt" data-m="dark" style="flex:1;text-align:center">🌙 深色</div></div></div>
+    <div class="section-title"><h2>強調色 <span>Accent</span></h2></div>
+    <div class="card" style="padding:16px"><div class="theme-row" id="themeRow"></div></div>
+  </section>
+
+  <!-- STATS -->
+  <section class="view" id="view-stats">
+    <div class="section-title"><h2>數據總覽 <span>Statistics</span></h2></div>
+    <div class="stat-grid">
+      <div class="card stat-box"><div class="n" id="stHabits" style="color:var(--accent)">0</div><div class="l">追蹤中習慣</div></div>
+      <div class="card stat-box"><div class="n" id="stToday" style="color:var(--amber)">0%</div><div class="l">今日完成率</div></div>
+      <div class="card stat-box"><div class="n" id="stBest" style="color:var(--purple)">0</div><div class="l">最佳連續</div></div>
+      <div class="card stat-box"><div class="n" id="stTotal" style="color:var(--green)">0</div><div class="l">總打卡次數</div></div>
+    </div>
+    <div class="section-title"><h2>近 12 週 <span>Last 12 weeks</span></h2></div>
+    <div id="heatmaps"></div>
+  </section>
+</main>
+
+<nav>
+  <div class="nav-btn active" data-v="today" onclick="switchView('today')"><div class="ni">◎</div>今日</div>
+  <div class="nav-btn" data-v="habits" onclick="switchView('habits')"><div class="ni">⊞</div>習慣</div>
+  <div class="nav-btn" data-v="goals" onclick="switchView('goals')"><div class="ni">🎯</div>目標</div>
+  <div class="nav-btn" data-v="cal" onclick="switchView('cal')"><div class="ni">📅</div>日曆</div>
+  <div class="nav-btn" data-v="stats" onclick="switchView('stats')"><div class="ni">▦</div>數據</div>
+</nav>
+
+<!-- Habit modal -->
+<div class="modal-bg" id="habitModal"><div class="modal">
+  <h3 id="modalTitle">新增習慣</h3>
+  <div class="field"><label>名稱 Name</label><input type="text" id="hName" placeholder="例如：喝水 / 運動 30 分鐘" maxlength="30"></div>
+  <div class="field"><label>類型 Type</label><div class="type-row" id="typeRow"><div class="type-opt sel" data-t="build">養成 ✅</div><div class="type-opt" data-t="count">計量 🔢</div><div class="type-opt" data-t="quit">戒除 🚫</div></div></div>
+  <div class="field" id="countField" style="display:none"><label>每日目標 Goal</label><div class="row2"><input type="number" id="hGoal" min="1" max="100000" value="8" style="flex:2"><input type="text" id="hUnit" placeholder="單位：杯/下/分鐘" maxlength="6" style="flex:3"></div></div>
+  <div class="field"><label>圖示 Icon</label><div class="emoji-row" id="emojiRow"></div></div>
+  <div class="field"><label>顏色 Color</label><div class="color-row" id="colorRow"></div></div>
+  <div class="field"><label>時段 Time slot（時間軸用）</label><div class="slot-row" id="slotRow"></div></div>
+  <div class="field"><label>頻率 Frequency</label><div class="freq-row" id="freqRow"><div class="freq-opt sel" data-f="daily">每天</div><div class="freq-opt" data-f="weekdays">平日</div><div class="freq-opt" data-f="weekend">週末</div><div class="freq-opt" data-f="days">自訂</div></div><div class="day-row" id="dayRow" style="display:none;margin-top:9px"></div></div>
+  <div class="field"><label>歸屬目標 Goal（選填）</label><div class="goal-row" id="goalPickRow"></div></div>
+  <div class="field"><label>提醒時間 Reminder（選填）</label><div class="row2" style="align-items:center"><input type="time" id="hReminder" style="flex:1"><span class="btn ghost sm" onclick="document.getElementById('hReminder').value=''">清除</span></div></div>
+  <div class="modal-actions"><button class="btn ghost" style="flex:1" onclick="closeHabitModal()">取消</button><button class="btn" style="flex:2" onclick="saveHabit()">儲存</button></div>
+  <div class="danger" id="deleteBtn" style="display:none" onclick="deleteHabit()">刪除此習慣</div>
+</div></div>
+
+<!-- Goal modal -->
+<div class="modal-bg" id="goalModal"><div class="modal">
+  <h3 id="goalModalTitle">新增目標</h3>
+  <div class="field"><label>目標名稱</label><input type="text" id="gName" placeholder="例如：2 個月讀完 4 本書" maxlength="30"></div>
+  <div class="field"><label>目標日期</label><input type="date" id="gDate"></div>
+  <div class="field"><label>圖示</label><div class="emoji-row" id="gEmojiRow"></div></div>
+  <div class="field"><label>顏色</label><div class="color-row" id="gColorRow"></div></div>
+  <div class="hint">建立後到習慣編輯把習慣「歸屬」到此目標，首頁就會顯示倒數與進度。</div>
+  <div class="modal-actions"><button class="btn ghost" style="flex:1" onclick="closeGoalModal()">取消</button><button class="btn" style="flex:2" onclick="saveGoal()">儲存</button></div>
+  <div class="danger" id="gDeleteBtn" style="display:none" onclick="deleteGoal()">刪除此目標</div>
+</div></div>
+
+<!-- Mode modal -->
+<div class="modal-bg" id="modeModal"><div class="modal">
+  <h3 id="modeModalTitle">新增模式</h3>
+  <div class="field"><label>模式名稱（例如：放鬆模式 / 高效模式）</label><input type="text" id="mName" placeholder="放鬆模式" maxlength="16"></div>
+  <div class="field"><label>圖示</label><div class="emoji-row" id="mEmojiRow"></div></div>
+  <div class="field"><label>包含哪些習慣</label><div class="chk-row" id="mHabitRow"></div></div>
+  <div class="modal-actions"><button class="btn ghost" style="flex:1" onclick="closeModeModal()">取消</button><button class="btn" style="flex:2" onclick="saveMode()">儲存</button></div>
+  <div class="danger" id="mDeleteBtn" style="display:none" onclick="deleteMode()">刪除此模式</div>
+</div></div>
+
+<!-- Template modal -->
+<div class="modal-bg" id="tplModal"><div class="modal"><h3>🎁 範本庫 <span style="font-size:13px;color:var(--txt-faint);font-weight:400">點一下即加入</span></h3><div id="tplBody"></div><div class="modal-actions"><button class="btn" style="flex:1" onclick="closeTemplates()">完成</button></div></div></div>
+
+<!-- Day modal -->
+<div class="modal-bg" id="dayModal"><div class="modal">
+  <h3 id="dayTitle">—</h3>
+  <div id="daySummary" style="font-size:13px;color:var(--txt-dim);margin-bottom:14px"></div>
+  <div class="field"><label>待辦事項 Todos</label><div id="dayTodos"></div>
+    <div class="focus-add" style="padding:8px 0 0"><input id="dayTodoInput" type="text" placeholder="新增這天的待辦…" maxlength="60"><button class="btn sm" onclick="addDayTodo()">加</button></div></div>
+  <div class="field"><label>當天心情與回顧</label><div class="mood-row" id="dayMoodRow"></div><input type="text" id="dayReflect" placeholder="這天一句話…" maxlength="120" style="width:100%;background:var(--bg-soft);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:12px;font-size:14px;font-family:var(--font)"></div>
+  <div class="modal-actions"><button class="btn" style="flex:1" onclick="closeDayModal()">完成</button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+<canvas id="confetti"></canvas>
+<div class="celebrate" id="celebrate" onclick="hideCelebrate()"><div class="ce-card"><div class="ce-emoji" id="ceEmoji">🎉</div><div class="ce-title" id="ceTitle"></div><div class="ce-sub" id="ceSub"></div></div></div>
+<div class="timer-overlay" id="timerOverlay">
+  <div class="t-emoji" id="tEmoji">⏱</div><div class="t-name" id="tName">專注</div><div class="t-clock" id="tClock">10:00</div><div class="t-hint">專注完成就自動打卡 ✓</div>
+  <div class="t-presets" id="tPresets"><div class="tpreset" data-m="5">5 分</div><div class="tpreset sel" data-m="10">10 分</div><div class="tpreset" data-m="15">15 分</div><div class="tpreset" data-m="25">25 分</div></div>
+  <div class="t-controls"><div class="tc-btn" onclick="closeTimer()">✕</div><div class="tc-btn main" id="tPlay" onclick="toggleTimer()">▶</div><div class="tc-btn" onclick="completeTimer()">✓</div></div>
+</div>
+
+<script>
+const KEY='habit-tracker-v1';
+const dayKey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const todayKey=()=>dayKey(new Date());
+const WD=['日','一','二','三','四','五','六'];
+const MOODS=['😣','😕','🙂','😀','🤩'];
+const SLOTS=[{k:'morning',ic:'🌅',n:'早晨'},{k:'noon',ic:'☀️',n:'午間'},{k:'evening',ic:'🌙',n:'晚間'},{k:'any',ic:'🔁',n:'全天'}];
+function slotLabel(k){const s=SLOTS.find(x=>x.k===k);return s?s.ic+' '+s.n:'🔁 全天';}
+
+let state=load();
+function load(){
+  try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.habits){
+    s.game=s.game||{};s.game.seenBadges=s.game.seenBadges||[];s.game.seenLevel=s.game.seenLevel||1;s.game.lastPerfect=s.game.lastPerfect||'';
+    s.settings=s.settings||{};s.settings.theme=s.settings.theme||'fresh';s.settings.mode=s.settings.mode||'light';s.settings.activeMode=s.settings.activeMode||null;s.settings.todayView=s.settings.todayView||'list';
+    s.ideas=s.ideas||[];s.focusByDay=s.focusByDay||{};s.goals=s.goals||[];s.modes=s.modes||[];s.todos=s.todos||[];s.reflectByDay=s.reflectByDay||{};
+    s.habits.forEach(h=>{h.type=h.type||'build';h.goal=h.goal||1;h.unit=h.unit||'';h.days=h.days||[];h.reminder=h.reminder||null;h.goalId=h.goalId||null;h.slot=h.slot||'any';});
+    return s;}}catch(e){}
+  return {habits:[],goals:[],modes:[],todos:[],reflectByDay:{},focusByDay:{},ideas:[],game:{seenBadges:[],seenLevel:1,lastPerfect:''},settings:{theme:'fresh',mode:'light',activeMode:null,todayView:'list'}};
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+
+const EMOJIS=['💧','🏃','📚','🧘','💪','🥗','😴','✍️','🎯','🧠','☀️','💊','🚭','🔤','🧹','💰'];
+const GEMOJIS=['🎯','🚀','📚','💪','🌅','💰','🏆','🧘','✈️','❤️','🎓','🏔️'];
+const MEMOJIS=['⚡','🌿','💼','🏖️','🤒','🎯','🌙','🔥'];
+const COLORS=['#35c85a','#6e8bff','#ff9f43','#ff5d6c','#b78bff','#4ec2e6','#ff8fab','#9ad34b'];
+const THEMES={fresh:{name:'清新綠',accent:'#35c85a',accent2:'#74d98a',glow:'#35c85a'},ocean:{name:'海洋',accent:'#4ec2e6',accent2:'#6e8bff',glow:'#4ec2e6'},neon:{name:'霓虹紫',accent:'#6e8bff',accent2:'#b78bff',glow:'#6e8bff'},sunset:{name:'日落',accent:'#ff8f5e',accent2:'#ff5d8f',glow:'#ff7a59'},candy:{name:'糖果',accent:'#ff7ab8',accent2:'#b78bff',glow:'#ff7ab8'},gold:{name:'黃金',accent:'#f5a623',accent2:'#ffce54',glow:'#f5a623'}};
+const MODES={light:{'--bg':'#f5f6f4','--bg-soft':'#ecefe9','--card':'#ffffff','--card-2':'#f0f3ed','--line':'#e6e9e2','--line-soft':'#eef1ea','--txt':'#1f242b','--txt-dim':'#69707a','--txt-faint':'#a2a8af','--ring-bg':'#e8ebe6','--nav-bg':'rgba(255,255,255,.9)','--shadow':'0 6px 20px rgba(40,50,45,.08)'},dark:{'--bg':'#0e1311','--bg-soft':'#141a17','--card':'#171e1a','--card-2':'#1d2622','--line':'#27322c','--line-soft':'#1f2823','--txt':'#e7eef0','--txt-dim':'#93a09a','--txt-faint':'#5f6c66','--ring-bg':'#26302b','--nav-bg':'rgba(14,19,17,.9)','--shadow':'0 8px 30px rgba(0,0,0,.45)'}};
+const TEMPLATES=[
+  {cat:'健康 Health',items:[{name:'喝水',emoji:'💧',color:'#4ec2e6',type:'count',goal:8,unit:'杯',freq:'daily',slot:'any'},{name:'早睡（23:00 前）',emoji:'😴',color:'#b78bff',type:'build',freq:'daily',reminder:'22:30',slot:'evening'},{name:'吃早餐',emoji:'🍳',color:'#ff9f43',type:'build',freq:'daily',slot:'morning'},{name:'吃維他命',emoji:'💊',color:'#35c85a',type:'build',freq:'daily',slot:'morning'},{name:'量體重',emoji:'⚖️',color:'#9ad34b',type:'build',freq:'daily',slot:'morning'}]},
+  {cat:'運動 Fitness',items:[{name:'運動 30 分鐘',emoji:'🏃',color:'#35c85a',type:'build',freq:'daily',slot:'morning'},{name:'走 8000 步',emoji:'👟',color:'#4ec2e6',type:'count',goal:8000,unit:'步',freq:'daily',slot:'any'},{name:'伏地挺身',emoji:'💪',color:'#ff5d6c',type:'count',goal:30,unit:'下',freq:'daily',slot:'any'},{name:'伸展拉筋',emoji:'🧘',color:'#b78bff',type:'build',freq:'daily',slot:'evening'},{name:'重訓',emoji:'🏋️',color:'#ff9f43',type:'build',freq:'days',days:[1,3,5],slot:'evening'}]},
+  {cat:'學習 Study',items:[{name:'閱讀 20 分鐘',emoji:'📚',color:'#ff9f43',type:'build',freq:'daily',slot:'evening'},{name:'背英文單字',emoji:'🔤',color:'#6e8bff',type:'count',goal:5,unit:'個',freq:'daily',slot:'noon'},{name:'線上課程',emoji:'🎓',color:'#b78bff',type:'build',freq:'days',days:[1,2,3,4,5],slot:'evening'},{name:'寫筆記',emoji:'✍️',color:'#35c85a',type:'build',freq:'daily',slot:'evening'}]},
+  {cat:'正念 Mindfulness',items:[{name:'冥想 10 分鐘',emoji:'🧘',color:'#b78bff',type:'build',freq:'daily',reminder:'07:00',slot:'morning'},{name:'寫日記',emoji:'📓',color:'#ff9f43',type:'build',freq:'daily',slot:'evening'},{name:'感恩三件事',emoji:'🙏',color:'#ff8fab',type:'build',freq:'daily',slot:'evening'},{name:'曬太陽',emoji:'☀️',color:'#f5a623',type:'build',freq:'daily',slot:'morning'}]},
+  {cat:'生產力 Productivity',items:[{name:'列待辦清單',emoji:'📝',color:'#6e8bff',type:'build',freq:'daily',slot:'morning'},{name:'專注工作 2 小時',emoji:'🎯',color:'#ff5d6c',type:'build',freq:'weekdays',slot:'noon'},{name:'整理桌面',emoji:'🧹',color:'#9ad34b',type:'build',freq:'daily',slot:'evening'},{name:'早起',emoji:'⏰',color:'#4ec2e6',type:'build',freq:'daily',reminder:'06:30',slot:'morning'}]},
+  {cat:'戒除 Quit',items:[{name:'不抽菸',emoji:'🚭',color:'#ff5d6c',type:'quit',freq:'daily',slot:'any'},{name:'不喝含糖飲料',emoji:'🥤',color:'#ff8fab',type:'quit',freq:'daily',slot:'any'},{name:'不熬夜',emoji:'🌙',color:'#b78bff',type:'quit',freq:'daily',slot:'evening'},{name:'睡前不滑手機',emoji:'📵',color:'#6e8bff',type:'quit',freq:'daily',slot:'evening'}]},
+];
+
+/* ===== helpers ===== */
+function isDue(h,d){const w=d.getDay();if(h.freq==='daily')return true;if(h.freq==='weekdays')return w>=1&&w<=5;if(h.freq==='weekend')return w===0||w===6;if(h.freq==='days')return (h.days||[]).includes(w);return true;}
+function isDueToday(h){return isDue(h,new Date());}
+function done(h,k){if(h.type==='count')return (h.history[k]||0)>=(h.goal||1);return !!h.history[k];}
+function val(h,k){return h.history[k]||0;}
+function freqLabel(h){if(h.freq==='daily')return '每天';if(h.freq==='weekdays')return '平日';if(h.freq==='weekend')return '週末';if(h.freq==='days')return '週'+(h.days||[]).slice().sort().map(d=>WD[d]).join('');return '每天';}
+function typeTag(h){return h.type==='count'?'🔢':h.type==='quit'?'🚫':'';}
+function activeHabits(){return state.habits.filter(h=>!h.archived);}
+function dueHabits(){return activeHabits().filter(isDueToday);}
+function viewHabits(){const due=dueHabits();if(!state.settings.activeMode)return due;const m=state.modes.find(x=>x.id===state.settings.activeMode);return m?due.filter(h=>m.habitIds.includes(h.id)):due;}
+function streakOf(h){let s=0;const d=new Date();for(let i=0;i<400;i++){const k=dayKey(d);if(isDue(h,d)){if(done(h,k))s++;else{if(i===0){d.setDate(d.getDate()-1);continue;}break;}}d.setDate(d.getDate()-1);}return s;}
+function bestStreakOf(h){const days=Object.keys(h.history).filter(k=>done(h,k)).sort();if(!days.length)return 0;let best=1,cur=1;for(let i=1;i<days.length;i++){const diff=Math.round((new Date(days[i])-new Date(days[i-1]))/86400000);if(diff===1){cur++;best=Math.max(best,cur);}else if(diff>1)cur=1;}return best;}
+function maxBest(){return activeHabits().reduce((a,h)=>Math.max(a,bestStreakOf(h)),0);}
+function totalChecks(){return activeHabits().reduce((a,h)=>a+Object.keys(h.history).filter(k=>done(h,k)).length,0);}
+function totalFocusDone(){return Object.values(state.focusByDay).reduce((a,arr)=>a+arr.filter(f=>f.done).length,0);}
+function todayPct(){const d=viewHabits(),tk=todayKey();return d.length?Math.round(d.filter(h=>done(h,tk)).length/d.length*100):0;}
+function daysLeft(g){const t=new Date(g.targetDate+'T00:00:00'),n=new Date();n.setHours(0,0,0,0);return Math.round((t-n)/86400000);}
+function goalHabits(g){return activeHabits().filter(h=>h.goalId===g.id);}
+function goalProgress(g){const ls=goalHabits(g);if(!ls.length)return 0;let sum=0;ls.forEach(h=>{let due=0,don=0;for(let i=0;i<30;i++){const d=new Date();d.setDate(d.getDate()-i);if(isDue(h,d)){due++;if(done(h,dayKey(d)))don++;}}sum+=due?don/due:0;});return Math.round(sum/ls.length*100);}
+function nearestGoal(){const fut=state.goals.filter(g=>daysLeft(g)>=0).sort((a,b)=>daysLeft(a)-daysLeft(b));return fut[0]||state.goals[0]||null;}
+function todosOn(ds){return state.todos.filter(t=>t.date===ds);}
+function dayDonePct(ds){const d=new Date(ds+'T00:00:00');const due=activeHabits().filter(h=>isDue(h,d));if(!due.length)return 0;return Math.round(due.filter(h=>done(h,ds)).length/due.length*100);}
+
+function totalXP(){return totalChecks()*10+totalFocusDone()*5;}
+function levelInfo(){let lvl=1,acc=0,need=100,xp=totalXP();while(xp>=acc+need){acc+=need;lvl++;need=100+(lvl-1)*50;}return {level:lvl,into:xp-acc,need,xp};}
+const BADGES=[{id:'first',ic:'🌱',n:'初次打卡',d:'完成第一次打卡',f:()=>totalChecks()>=1},{id:'s3',ic:'🔥',n:'三日不斷',d:'連續3天',f:()=>maxBest()>=3},{id:'s7',ic:'⚡',n:'一週堅持',d:'連續7天',f:()=>maxBest()>=7},{id:'s30',ic:'👑',n:'月之王者',d:'連續30天',f:()=>maxBest()>=30},{id:'c50',ic:'💪',n:'五十次',d:'累積打卡50次',f:()=>totalChecks()>=50},{id:'c100',ic:'💯',n:'百次達成',d:'累積打卡100次',f:()=>totalChecks()>=100},{id:'perfect',ic:'🎯',n:'完美一天',d:'單日全部完成',f:()=>todayPct()===100&&viewHabits().length>0},{id:'goal',ic:'🧭',n:'設定方向',d:'建立第一個目標',f:()=>state.goals.length>=1},{id:'lv5',ic:'🚀',n:'五級玩家',d:'達到等級5',f:()=>levelInfo().level>=5},{id:'collect',ic:'🌟',n:'習慣收藏家',d:'建立5個習慣',f:()=>activeHabits().length>=5}];
+function unlockedSet(){const now=BADGES.filter(b=>b.f()).map(b=>b.id);return new Set([...state.game.seenBadges,...now]);}
+
+/* ===== render ===== */
+function render(){renderHeader();renderToday();renderHabitsPage();renderGoals();renderCal();renderAward();renderStats();applyProgress();save();}
+
+function renderHeader(){
+  const d=new Date(),h=d.getHours();
+  const g=h<5?'夜深了':h<11?'早安':h<14?'午安':h<18?'下午好':h<22?'晚安':'夜深了';const ge=h<11?'Good morning':h<18?'Good afternoon':'Good evening';
+  document.getElementById('greet').textContent=g+' · '+ge;
+  document.getElementById('dateBig').textContent=(d.getMonth()+1)+'月'+d.getDate()+'日 週'+WD[d.getDay()];
+  document.getElementById('dateSub').textContent=d.getFullYear()+' · '+todayKey();
+  const li=levelInfo();document.getElementById('lvLabel').textContent='Lv.'+li.level;document.getElementById('lvXp').textContent=li.into+'/'+li.need+' XP';document.getElementById('lvBar').style.width=Math.round(li.into/li.need*100)+'%';
+}
+
+function renderModeBar(){
+  const bar=document.getElementById('modeBar');bar.innerHTML='';
+  const all=document.createElement('div');all.className='mode-chip'+(state.settings.activeMode?'':' sel');all.textContent='全部';all.onclick=()=>{state.settings.activeMode=null;render();};bar.appendChild(all);
+  state.modes.forEach(m=>{const c=document.createElement('div');c.className='mode-chip'+(state.settings.activeMode===m.id?' sel':'');c.textContent=m.emoji+' '+m.name;c.onclick=()=>{state.settings.activeMode=m.id;render();};c.ondblclick=()=>openModeModal(m.id);bar.appendChild(c);});
+  if(state.settings.activeMode){const ed=document.createElement('div');ed.className='mode-chip';ed.textContent='✎ 編輯';ed.onclick=()=>openModeModal(state.settings.activeMode);bar.appendChild(ed);}
+  const add=document.createElement('div');add.className='mode-chip add';add.textContent='＋ 模式';add.onclick=()=>openModeModal();bar.appendChild(add);
+}
+
+function renderToday(){
+  renderModeBar();
+  const view=viewHabits(),tk=todayKey();
+  const pct=todayPct(),doneCount=view.filter(h=>done(h,tk)).length;
+  document.getElementById('ring').style.strokeDashoffset=264-(264*pct/100);
+  document.getElementById('ring').style.stroke=pct===100?'var(--green)':pct>0?'var(--accent)':'var(--ring-bg)';
+  document.getElementById('ringPct').textContent=pct+'%';
+  document.getElementById('mascot').textContent=activeHabits().length===0?'🌱':pct===100?'🏆':pct>=67?'🤩':pct>=34?'😃':pct>0?'🙂':'😴';
+  const focus=state.focusByDay[tk]||[],fDone=focus.filter(f=>f.done).length;
+  let hh,hs;
+  if(activeHabits().length===0){hh='還沒有習慣';hs='點「🎁」一鍵加，或 + 自訂。';}
+  else if(view.length===0){hh='這個模式沒有習慣';hs='切回「全部」或編輯模式加入習慣。';}
+  else if(pct===100){hh='今天全破關 🎉';hs=doneCount+'/'+view.length+' 個習慣達成，太強了！';}
+  else if(pct>0){hh='繼續加油！';hs='習慣 '+doneCount+'/'+view.length+'　·　聚焦 '+fDone+'/'+focus.length;}
+  else {hh='今天還沒開始';hs='打勾第一個習慣，啟動你的一天。';}
+  document.getElementById('heroH').textContent=hh;document.getElementById('heroS').textContent=hs;
+  document.getElementById('streakPill').textContent='🔥 連續 '+maxBest()+' 天';
+  const ng=nearestGoal(),gp=document.getElementById('goalPill');
+  if(ng){const dl=daysLeft(ng);gp.style.display='';gp.textContent='🎯 '+ng.name+'：'+(dl>0?'還有 '+dl+' 天':dl===0?'今天到期':'已過期');}else gp.style.display='none';
+
+  const fl=document.getElementById('focusList');fl.innerHTML='';
+  if(focus.length===0)fl.innerHTML='<div class="focus-empty">今天最重要的 3 件事是什麼？<br>少而精，才不會發散。</div>';
+  else focus.forEach((f,i)=>{const r=document.createElement('div');r.className='focus-item';r.innerHTML=`<div class="focus-check ${f.done?'done':''}" onclick="toggleFocus(${i})"></div><div class="focus-text ${f.done?'done':''}">${esc(f.text)}</div><div class="focus-del" onclick="delFocus(${i})">×</div>`;fl.appendChild(r);});
+  const fi=document.getElementById('focusInput');fi.disabled=focus.length>=3;fi.placeholder=focus.length>=3?'今天已聚焦滿 3 件 ✓':'輸入今天最重要的一件事…';
+
+  document.querySelectorAll('#viewSeg div').forEach(o=>{o.classList.toggle('sel',o.dataset.vw===state.settings.todayView);o.onclick=()=>{state.settings.todayView=o.dataset.vw;render();};});
+  const c=document.getElementById('todayHabits');c.innerHTML='';
+  if(view.length===0){c.innerHTML=activeHabits().length?'<div class="empty"><div class="d">今天沒有可做的習慣 🎈</div></div>':'';}
+  else if(state.settings.todayView==='timeline'){
+    SLOTS.forEach(s=>{const hs2=view.filter(h=>(h.slot||'any')===s.k);if(!hs2.length)return;const head=document.createElement('div');head.className='slot-head';head.innerHTML=s.ic+' '+s.n+' <span style="color:var(--txt-faint);font-weight:400">'+hs2.filter(h=>done(h,tk)).length+'/'+hs2.length+'</span>';c.appendChild(head);const card=document.createElement('div');card.className='card';hs2.forEach(h=>card.appendChild(habitRow(h)));c.appendChild(card);});
+  } else {const card=document.createElement('div');card.className='card';view.forEach(h=>card.appendChild(habitRow(h)));c.appendChild(card);}
+
+  renderReflect();renderIdeas();
+}
+
+function habitRow(h){
+  const tk=todayKey(),isDone=done(h,tk),st=streakOf(h);
+  const row=document.createElement('div');row.className='habit';
+  let strip='';for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=dayKey(d);strip+=`<div class="wk-dot" style="background:${done(h,k)?h.color:'var(--ring-bg)'}"></div>`;}
+  const gl=h.goalId?state.goals.find(x=>x.id===h.goalId):null;
+  let right;
+  if(h.type==='count'){const v=val(h,tk);right=`<div class="counter"><div class="cbtn" onclick="incCount(event,'${h.id}',-1)">−</div><div class="cval ${isDone?'done':''}" id="cval-${h.id}">${v}<small>/${h.goal}${esc(h.unit)}</small></div><div class="cbtn" onclick="incCount(event,'${h.id}',1)">+</div></div>`;}
+  else right=`<div class="h-right"><div class="h-timer" onclick="openTimer(event,'${h.id}')">⏱</div><div class="h-check ${isDone?'done':''}" data-id="${h.id}" style="${isDone?`background:${h.color};border-color:${h.color}`:''}" onclick="toggleHabit('${h.id}')"></div></div>`;
+  row.innerHTML=`<div class="h-emoji" style="background:${h.color}22">${h.emoji}</div><div class="h-main" onclick="openHabitModal('${h.id}')"><div class="h-name">${esc(h.name)} ${typeTag(h)}</div><div class="h-meta"><span>${freqLabel(h)}</span>${gl?`<span class="gl">🎯 ${esc(gl.name)}</span>`:''}${h.reminder?`<span class="rem">⏰ ${h.reminder}</span>`:''}${st>0?`<span class="streak">🔥 ${st} 天</span>`:''}</div><div class="week-strip">${strip}</div></div>${right}`;
+  return row;
+}
+
+function renderHabitsPage(){const c=document.getElementById('allHabits'),list=activeHabits();if(!list.length){c.innerHTML=`<div class="empty"><div class="ic">⊞</div><div class="t">還沒有習慣</div><div class="d">用「🎁 範本」一鍵加，或點 + 自訂。</div><button class="btn" onclick="openTemplates()">🎁 從範本開始</button></div>`;return;}c.innerHTML='<div class="card"></div>';list.forEach(h=>c.firstChild.appendChild(habitRow(h)));}
+
+function renderGoals(){
+  const c=document.getElementById('goalList');
+  if(!state.goals.length){c.innerHTML=`<div class="empty"><div class="ic">🎯</div><div class="t">還沒有目標</div><div class="d">設一個 1～3 個月的目標，把習慣掛上去，<br>每天看得到方向與倒數。</div><button class="btn" onclick="openGoalModal()">＋ 設定第一個目標</button></div>`;return;}
+  c.innerHTML='';
+  state.goals.slice().sort((a,b)=>daysLeft(a)-daysLeft(b)).forEach(g=>{const dl=daysLeft(g),prog=goalProgress(g),ls=goalHabits(g);const card=document.createElement('div');card.className='card goal-card';const ddNum=dl>0?'D-'+dl:dl===0?'今天':'+'+(-dl);
+    card.innerHTML=`<div class="goal-head" onclick="openGoalModal('${g.id}')"><div class="goal-emoji" style="background:${g.color}22">${g.emoji}</div><div style="flex:1"><div class="goal-name">${esc(g.name)}</div><div class="goal-sub">🗓️ ${g.targetDate} · ${ls.length} 個習慣</div></div><div class="dday"><b>${ddNum}</b><span>${dl>0?'天後':dl===0?'到期':'過期'}</span></div></div><div class="goal-prog"><div class="pbar"><i style="width:${prog}%;background:linear-gradient(90deg,${g.color},${g.color}aa)"></i></div><div class="pl"><span>近 30 天達成率</span><span style="color:${g.color};font-weight:700">${prog}%</span></div></div>`;c.appendChild(card);});
+}
+
+let calY,calM;
+function calStep(n){calM+=n;if(calM<0){calM=11;calY--;}if(calM>11){calM=0;calY++;}renderCal();}
+function renderCal(){
+  if(calY===undefined){const n=new Date();calY=n.getFullYear();calM=n.getMonth();}
+  document.getElementById('calHead').textContent=calY+'年'+(calM+1)+'月';
+  const grid=document.getElementById('calGrid');grid.innerHTML='';
+  const startDow=new Date(calY,calM,1).getDay(),dim=new Date(calY,calM+1,0).getDate();
+  for(let i=0;i<startDow;i++){const b=document.createElement('div');b.className='cal-blank';grid.appendChild(b);}
+  for(let day=1;day<=dim;day++){
+    const ds=calY+'-'+String(calM+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    const cell=document.createElement('div');cell.className='cal-cell'+(ds===todayKey()?' today':'');
+    const d=new Date(ds+'T00:00:00'),due=activeHabits().filter(h=>isDue(h,d)),dc=due.filter(h=>done(h,ds)).length;
+    if(dc>0){const pct=Math.round(dc/due.length*100);cell.style.background=`color-mix(in srgb, var(--accent) ${Math.round(22+pct*0.55)}%, var(--card))`;}
+    const hasTodo=todosOn(ds).length>0;
+    cell.innerHTML=`<span class="cd">${day}</span>${hasTodo?'<span class="cdot"></span>':''}`;
+    cell.onclick=()=>openDayModal(ds);grid.appendChild(cell);
+  }
+}
+
+function renderAward(){
+  const li=levelInfo();document.getElementById('awLvn').textContent=li.level;document.getElementById('awXp').textContent=li.into+' / '+li.need+' XP · 再 '+(li.need-li.into)+' XP 升級';document.getElementById('awBar').style.width=Math.round(li.into/li.need*100)+'%';
+  const un=unlockedSet();document.getElementById('badgeCount').textContent='Badges '+un.size+'/'+BADGES.length;
+  const g=document.getElementById('badgeGrid');g.innerHTML='';BADGES.forEach(b=>{const ok=un.has(b.id);const el=document.createElement('div');el.className='badge '+(ok?'unlocked':'locked');el.innerHTML=`<div class="bic">${ok?b.ic:'🔒'}</div><div class="bn">${b.n}</div><div class="bd">${b.d}</div>`;g.appendChild(el);});
+  document.querySelectorAll('#modeRow .freq-opt').forEach(o=>{o.classList.toggle('sel',o.dataset.m===state.settings.mode);o.onclick=()=>{state.settings.mode=o.dataset.m;applyMode(o.dataset.m);save();renderAward();};});
+  const tr=document.getElementById('themeRow');tr.innerHTML='';Object.keys(THEMES).forEach(id=>{const t=THEMES[id];const el=document.createElement('div');el.className='theme-opt'+(state.settings.theme===id?' sel':'');el.onclick=()=>{state.settings.theme=id;applyTheme(id);save();renderAward();};el.innerHTML=`<div class="theme-dot" style="background:linear-gradient(135deg,${t.accent},${t.accent2})"></div><div class="tn">${t.name}</div>`;tr.appendChild(el);});
+}
+
+function renderStats(){
+  const list=activeHabits();document.getElementById('stHabits').textContent=list.length;document.getElementById('stToday').textContent=todayPct()+'%';document.getElementById('stBest').textContent=maxBest();document.getElementById('stTotal').textContent=totalChecks();
+  const hm=document.getElementById('heatmaps');hm.innerHTML='';if(!list.length){hm.innerHTML=`<div class="empty"><div class="ic">▦</div><div class="d">新增習慣後顯示熱力圖。</div></div>`;return;}
+  list.forEach(h=>{const card=document.createElement('div');card.className='card heat-card';card.style.marginBottom='12px';let cells='';for(let i=83;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=dayKey(d);cells+=`<div class="heat-cell" title="${k}" style="background:${done(h,k)?h.color:'var(--ring-bg)'}"></div>`;}card.innerHTML=`<div class="heat-head"><div class="h-emoji" style="width:30px;height:30px;font-size:16px;background:${h.color}22">${h.emoji}</div><div style="flex:1"><div style="font-size:13.5px;font-weight:700">${esc(h.name)} ${typeTag(h)}</div><div style="font-size:11px;color:var(--txt-faint)">目前連續 ${streakOf(h)} 天 · 最佳 ${bestStreakOf(h)} 天</div></div></div><div class="heat-grid">${cells}</div>`;hm.appendChild(card);});
+}
+
+function renderReflect(){
+  const tk=todayKey(),r=state.reflectByDay[tk]||{};
+  const mr=document.getElementById('moodRow');mr.innerHTML='';
+  MOODS.forEach(m=>{const el=document.createElement('div');el.className='mood'+(r.mood===m?' sel':'');el.textContent=m;el.onclick=()=>{state.reflectByDay[tk]=state.reflectByDay[tk]||{};state.reflectByDay[tk].mood=(state.reflectByDay[tk].mood===m?'':m);save();renderReflect();};mr.appendChild(el);});
+  const ri=document.getElementById('reflectInput');if(document.activeElement!==ri)ri.value=r.text||'';
+}
+
+function renderIdeas(){const c=document.getElementById('ideaList');if(!state.ideas.length){c.innerHTML='<div class="focus-empty" style="padding:14px">點子先丟進來，別讓它打斷現在手上的事。</div>';return;}c.innerHTML='';state.ideas.slice().reverse().forEach(it=>{const i=state.ideas.indexOf(it);const r=document.createElement('div');r.className='idea';r.innerHTML=`<div class="idea-dot"></div><div class="idea-body"><div class="idea-text">${esc(it.text)}</div><div class="idea-time">${it.time}</div></div><div class="idea-act"><span class="promote" onclick="promoteIdea(${i})">→ 聚焦</span><span onclick="delIdea(${i})">刪</span></div>`;c.appendChild(r);});}
+
+function applyProgress(){
+  const newly=BADGES.filter(b=>b.f()&&!state.game.seenBadges.includes(b.id));newly.forEach(b=>state.game.seenBadges.push(b.id));
+  const lvl=levelInfo().level,leveled=lvl>state.game.seenLevel;if(leveled)state.game.seenLevel=lvl;
+  const pct=todayPct(),tk=todayKey();const perfectNew=(pct===100&&viewHabits().length>0&&state.game.lastPerfect!==tk);if(perfectNew)state.game.lastPerfect=tk;else if(pct<100&&state.game.lastPerfect===tk)state.game.lastPerfect='';
+  if(perfectNew){showCelebrate('🏆','今日全破關！','所有習慣完成，連續加碼！');bigConfetti();buzz([20,40,20,40,60]);}
+  else if(leveled){showCelebrate('🚀','升級了！ Lv.'+lvl,'累積 XP 解鎖新等級');bigConfetti();buzz([20,40,30]);}
+  else if(newly.length){toast('🏆 解鎖成就：'+newly[newly.length-1].n);miniConfetti();buzz([15,30,15]);}
+}
+
+/* ===== actions ===== */
+function toggleHabit(id){const h=state.habits.find(x=>x.id===id);if(!h)return;const tk=todayKey();const becoming=!h.history[tk];if(h.history[tk])delete h.history[tk];else h.history[tk]=true;buzz(15);render();if(becoming){const el=document.querySelector('.h-check[data-id="'+id+'"]');if(el){el.classList.add('pop');setTimeout(()=>el.classList.remove('pop'),400);}}}
+function incCount(e,id,delta){if(e)e.stopPropagation();const h=state.habits.find(x=>x.id===id);if(!h)return;const tk=todayKey();const was=done(h,tk);let v=(h.history[tk]||0)+delta;if(v<0)v=0;if(v===0)delete h.history[tk];else h.history[tk]=v;buzz(12);render();if(!was&&done(h,tk)){const el=document.getElementById('cval-'+id);if(el){el.classList.add('pop');setTimeout(()=>el.classList.remove('pop'),400);}}}
+function addFocus(t){const tk=todayKey();state.focusByDay[tk]=state.focusByDay[tk]||[];if(state.focusByDay[tk].length>=3)return;state.focusByDay[tk].push({text:t,done:false});render();}
+function toggleFocus(i){const f=state.focusByDay[todayKey()];if(f&&f[i]){f[i].done=!f[i].done;buzz(12);render();}}
+function delFocus(i){const f=state.focusByDay[todayKey()];if(f){f.splice(i,1);render();}}
+function addIdea(){const inp=document.getElementById('ideaInput'),v=inp.value.trim();if(!v)return;const d=new Date();state.ideas.push({text:v,time:(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')});inp.value='';render();toast('已收進收集箱');}
+function delIdea(i){state.ideas.splice(i,1);render();}
+function promoteIdea(i){const tk=todayKey();state.focusByDay[tk]=state.focusByDay[tk]||[];if(state.focusByDay[tk].length>=3){toast('今日聚焦已滿 3 件');return;}state.focusByDay[tk].push({text:state.ideas[i].text,done:false});state.ideas.splice(i,1);render();toast('已移到今日聚焦');}
+
+/* ===== templates ===== */
+function openTemplates(){const b=document.getElementById('tplBody');b.innerHTML='';TEMPLATES.forEach(g=>{const cat=document.createElement('div');cat.className='tpl-cat';cat.textContent=g.cat;b.appendChild(cat);const grid=document.createElement('div');grid.className='tpl-grid';g.items.forEach(t=>{const el=document.createElement('div');el.className='tpl-item';const tag=t.type==='count'?`<span class="tt">${t.goal}${t.unit}</span>`:t.type==='quit'?'<span class="tt">戒</span>':'';el.innerHTML=`<span class="te">${t.emoji}</span>${esc(t.name)}${tag}`;el.onclick=()=>addFromTemplate(t);grid.appendChild(el);});b.appendChild(grid);});document.getElementById('tplModal').classList.add('show');}
+function closeTemplates(){document.getElementById('tplModal').classList.remove('show');}
+function addFromTemplate(t){if(activeHabits().some(h=>h.name===t.name)){toast('「'+t.name+'」已經有了');return;}state.habits.push({id:'h'+Date.now()+Math.floor(performance.now()),name:t.name,emoji:t.emoji,color:t.color,type:t.type||'build',goal:t.goal||1,unit:t.unit||'',freq:t.freq||'daily',days:t.days||[],reminder:t.reminder||null,goalId:null,slot:t.slot||'any',history:{},archived:false});buzz(12);render();toast('已加入：'+t.name+' ✓');}
+
+/* ===== habit modal ===== */
+let editId=null,selEmoji=EMOJIS[0],selColor=COLORS[0],selFreq='daily',selType='build',selDays=[],selGoalId=null,selSlot='any';
+function buildPickers(){
+  const er=document.getElementById('emojiRow');er.innerHTML='';EMOJIS.forEach(e=>{const d=document.createElement('div');d.className='emoji-opt'+(e===selEmoji?' sel':'');d.textContent=e;d.onclick=()=>{selEmoji=e;buildPickers();};er.appendChild(d);});
+  const cr=document.getElementById('colorRow');cr.innerHTML='';COLORS.forEach(c=>{const d=document.createElement('div');d.className='color-opt'+(c===selColor?' sel':'');d.style.background=c;d.onclick=()=>{selColor=c;buildPickers();};cr.appendChild(d);});
+  const sr=document.getElementById('slotRow');sr.innerHTML='';SLOTS.forEach(s=>{const d=document.createElement('div');d.className='slot-opt'+(selSlot===s.k?' sel':'');d.textContent=s.ic+' '+s.n;d.onclick=()=>{selSlot=s.k;buildPickers();};sr.appendChild(d);});
+  document.querySelectorAll('#typeRow .type-opt').forEach(o=>{o.classList.toggle('sel',o.dataset.t===selType);o.onclick=()=>{selType=o.dataset.t;buildPickers();};});
+  document.getElementById('countField').style.display=selType==='count'?'block':'none';
+  document.querySelectorAll('#freqRow .freq-opt').forEach(o=>{o.classList.toggle('sel',o.dataset.f===selFreq);o.onclick=()=>{selFreq=o.dataset.f;buildPickers();};});
+  const dr=document.getElementById('dayRow');dr.style.display=selFreq==='days'?'flex':'none';dr.innerHTML='';if(selFreq==='days')for(let i=0;i<7;i++){const d=document.createElement('div');d.className='day-opt'+(selDays.includes(i)?' sel':'');d.textContent=WD[i];d.onclick=()=>{if(selDays.includes(i))selDays=selDays.filter(x=>x!==i);else selDays.push(i);buildPickers();};dr.appendChild(d);}
+  const gr=document.getElementById('goalPickRow');gr.innerHTML='';const none=document.createElement('div');none.className='goal-opt'+(selGoalId===null?' sel':'');none.textContent='無';none.onclick=()=>{selGoalId=null;buildPickers();};gr.appendChild(none);state.goals.forEach(g=>{const d=document.createElement('div');d.className='goal-opt'+(selGoalId===g.id?' sel':'');d.textContent=g.emoji+' '+g.name;d.onclick=()=>{selGoalId=g.id;buildPickers();};gr.appendChild(d);});
+}
+function openHabitModal(id){editId=id||null;if(editId){const h=state.habits.find(x=>x.id===editId);document.getElementById('modalTitle').textContent='編輯習慣';document.getElementById('hName').value=h.name;selEmoji=h.emoji;selColor=h.color;selFreq=h.freq;selType=h.type;selDays=(h.days||[]).slice();selGoalId=h.goalId||null;selSlot=h.slot||'any';document.getElementById('hGoal').value=h.goal||8;document.getElementById('hUnit').value=h.unit||'';document.getElementById('hReminder').value=h.reminder||'';document.getElementById('deleteBtn').style.display='block';}else{document.getElementById('modalTitle').textContent='新增習慣';document.getElementById('hName').value='';selEmoji=EMOJIS[0];selColor=COLORS[0];selFreq='daily';selType='build';selDays=[];selGoalId=null;selSlot='any';document.getElementById('hGoal').value=8;document.getElementById('hUnit').value='';document.getElementById('hReminder').value='';document.getElementById('deleteBtn').style.display='none';}buildPickers();document.getElementById('habitModal').classList.add('show');}
+function closeHabitModal(){document.getElementById('habitModal').classList.remove('show');}
+function saveHabit(){const name=document.getElementById('hName').value.trim();if(!name){toast('請輸入名稱');return;}if(selFreq==='days'&&selDays.length===0){toast('請選至少一個星期');return;}const goal=Math.max(1,parseInt(document.getElementById('hGoal').value)||1);const unit=document.getElementById('hUnit').value.trim();const reminder=document.getElementById('hReminder').value||null;if(reminder&&'Notification'in window&&Notification.permission==='default'){try{Notification.requestPermission();}catch(e){}}if(editId){const h=state.habits.find(x=>x.id===editId);Object.assign(h,{name,emoji:selEmoji,color:selColor,freq:selFreq,type:selType,goal,unit,days:selDays.slice(),reminder,goalId:selGoalId,slot:selSlot});}else state.habits.push({id:'h'+Date.now(),name,emoji:selEmoji,color:selColor,freq:selFreq,type:selType,goal,unit,days:selDays.slice(),reminder,goalId:selGoalId,slot:selSlot,history:{},archived:false});closeHabitModal();render();toast(editId?'已更新':'已新增習慣 ✓');}
+function deleteHabit(){if(editId&&confirm('確定刪除這個習慣？所有打卡紀錄會一併移除。')){state.habits=state.habits.filter(x=>x.id!==editId);state.modes.forEach(m=>m.habitIds=m.habitIds.filter(x=>x!==editId));closeHabitModal();render();toast('已刪除');}}
+
+/* ===== goal modal ===== */
+let gEditId=null,gSelEmoji=GEMOJIS[0],gSelColor=COLORS[0];
+function buildGoalPickers(){const er=document.getElementById('gEmojiRow');er.innerHTML='';GEMOJIS.forEach(e=>{const d=document.createElement('div');d.className='emoji-opt'+(e===gSelEmoji?' sel':'');d.textContent=e;d.onclick=()=>{gSelEmoji=e;buildGoalPickers();};er.appendChild(d);});const cr=document.getElementById('gColorRow');cr.innerHTML='';COLORS.forEach(c=>{const d=document.createElement('div');d.className='color-opt'+(c===gSelColor?' sel':'');d.style.background=c;d.onclick=()=>{gSelColor=c;buildGoalPickers();};cr.appendChild(d);});}
+function openGoalModal(id){gEditId=id||null;if(gEditId){const g=state.goals.find(x=>x.id===gEditId);document.getElementById('goalModalTitle').textContent='編輯目標';document.getElementById('gName').value=g.name;document.getElementById('gDate').value=g.targetDate;gSelEmoji=g.emoji;gSelColor=g.color;document.getElementById('gDeleteBtn').style.display='block';}else{document.getElementById('goalModalTitle').textContent='新增目標';document.getElementById('gName').value='';const d=new Date();d.setDate(d.getDate()+30);document.getElementById('gDate').value=dayKey(d);gSelEmoji=GEMOJIS[0];gSelColor=COLORS[0];document.getElementById('gDeleteBtn').style.display='none';}buildGoalPickers();document.getElementById('goalModal').classList.add('show');}
+function closeGoalModal(){document.getElementById('goalModal').classList.remove('show');}
+function saveGoal(){const name=document.getElementById('gName').value.trim();if(!name){toast('請輸入目標名稱');return;}const date=document.getElementById('gDate').value;if(!date){toast('請選目標日期');return;}if(gEditId){const g=state.goals.find(x=>x.id===gEditId);Object.assign(g,{name,targetDate:date,emoji:gSelEmoji,color:gSelColor});}else state.goals.push({id:'g'+Date.now(),name,targetDate:date,emoji:gSelEmoji,color:gSelColor,createdAt:todayKey()});closeGoalModal();render();toast(gEditId?'目標已更新':'已新增目標 🎯');}
+function deleteGoal(){if(gEditId&&confirm('確定刪除這個目標？掛在它底下的習慣會變回「無目標」，習慣本身不會刪。')){state.habits.forEach(h=>{if(h.goalId===gEditId)h.goalId=null;});state.goals=state.goals.filter(x=>x.id!==gEditId);closeGoalModal();render();toast('已刪除目標');}}
+
+/* ===== mode modal ===== */
+let mEditId=null,mSelEmoji=MEMOJIS[0],mSelHabits=[];
+function buildModePickers(){const er=document.getElementById('mEmojiRow');er.innerHTML='';MEMOJIS.forEach(e=>{const d=document.createElement('div');d.className='emoji-opt'+(e===mSelEmoji?' sel':'');d.textContent=e;d.onclick=()=>{mSelEmoji=e;buildModePickers();};er.appendChild(d);});const hr=document.getElementById('mHabitRow');hr.innerHTML='';if(!activeHabits().length)hr.innerHTML='<div class="hint">先新增習慣，才能建立模式。</div>';activeHabits().forEach(h=>{const d=document.createElement('div');d.className='chk-opt'+(mSelHabits.includes(h.id)?' sel':'');d.textContent=h.emoji+' '+h.name;d.onclick=()=>{if(mSelHabits.includes(h.id))mSelHabits=mSelHabits.filter(x=>x!==h.id);else mSelHabits.push(h.id);buildModePickers();};hr.appendChild(d);});}
+function openModeModal(id){mEditId=id||null;if(mEditId){const m=state.modes.find(x=>x.id===mEditId);document.getElementById('modeModalTitle').textContent='編輯模式';document.getElementById('mName').value=m.name;mSelEmoji=m.emoji;mSelHabits=m.habitIds.slice();document.getElementById('mDeleteBtn').style.display='block';}else{document.getElementById('modeModalTitle').textContent='新增模式';document.getElementById('mName').value='';mSelEmoji=MEMOJIS[0];mSelHabits=[];document.getElementById('mDeleteBtn').style.display='none';}buildModePickers();document.getElementById('modeModal').classList.add('show');}
+function closeModeModal(){document.getElementById('modeModal').classList.remove('show');}
+function saveMode(){const name=document.getElementById('mName').value.trim();if(!name){toast('請輸入模式名稱');return;}if(!mSelHabits.length){toast('至少選一個習慣');return;}if(mEditId){const m=state.modes.find(x=>x.id===mEditId);Object.assign(m,{name,emoji:mSelEmoji,habitIds:mSelHabits.slice()});}else{const nm={id:'m'+Date.now(),name,emoji:mSelEmoji,habitIds:mSelHabits.slice()};state.modes.push(nm);state.settings.activeMode=nm.id;}closeModeModal();render();toast(mEditId?'模式已更新':'已新增模式 ✓');}
+function deleteMode(){if(mEditId&&confirm('刪除這個模式？習慣本身不會刪。')){state.modes=state.modes.filter(x=>x.id!==mEditId);if(state.settings.activeMode===mEditId)state.settings.activeMode=null;closeModeModal();render();toast('已刪除模式');}}
+
+/* ===== day modal (calendar) ===== */
+let curDay=null;
+function openDayModal(ds){curDay=ds;const d=new Date(ds+'T00:00:00');document.getElementById('dayTitle').textContent=(d.getMonth()+1)+'月'+d.getDate()+'日 週'+WD[d.getDay()];const due=activeHabits().filter(h=>isDue(h,d)),dc=due.filter(h=>done(h,ds)).length;document.getElementById('daySummary').textContent='習慣完成 '+dc+'/'+due.length+'　·　待辦 '+todosOn(ds).filter(t=>t.done).length+'/'+todosOn(ds).length;renderDayTodos();renderDayReflect();document.getElementById('dayModal').classList.add('show');}
+function closeDayModal(){document.getElementById('dayModal').classList.remove('show');render();}
+function renderDayTodos(){const c=document.getElementById('dayTodos');const list=todosOn(curDay);c.innerHTML='';if(!list.length){c.innerHTML='<div class="focus-empty" style="padding:10px">這天還沒有待辦</div>';return;}list.forEach(t=>{const r=document.createElement('div');r.className='dt-item';r.innerHTML=`<div class="focus-check ${t.done?'done':''}" data-id="${t.id}"></div><div class="dt-text ${t.done?'done':''}">${esc(t.text)}</div><div class="dt-del" data-id="${t.id}">×</div>`;r.querySelector('.focus-check').onclick=()=>{t.done=!t.done;save();renderDayTodos();};r.querySelector('.dt-del').onclick=()=>{state.todos=state.todos.filter(x=>x.id!==t.id);save();renderDayTodos();};c.appendChild(r);});}
+function addDayTodo(){const inp=document.getElementById('dayTodoInput'),v=inp.value.trim();if(!v)return;state.todos.push({id:'t'+Date.now(),text:v,date:curDay,done:false});inp.value='';save();renderDayTodos();}
+function renderDayReflect(){const r=state.reflectByDay[curDay]||{};const mr=document.getElementById('dayMoodRow');mr.innerHTML='';MOODS.forEach(m=>{const el=document.createElement('div');el.className='mood'+(r.mood===m?' sel':'');el.textContent=m;el.onclick=()=>{state.reflectByDay[curDay]=state.reflectByDay[curDay]||{};state.reflectByDay[curDay].mood=(state.reflectByDay[curDay].mood===m?'':m);save();renderDayReflect();};mr.appendChild(el);});const ri=document.getElementById('dayReflect');ri.value=r.text||'';}
+
+/* ===== theme / nav ===== */
+function applyTheme(id){const t=THEMES[id]||THEMES.fresh;const r=document.documentElement.style;r.setProperty('--accent',t.accent);r.setProperty('--accent2',t.accent2);r.setProperty('--glow',t.glow);r.setProperty('--green',t.accent);r.setProperty('--accent-soft',t.accent+'1f');}
+function applyMode(m){const o=MODES[m]||MODES.light;const r=document.documentElement.style;for(const k in o)r.setProperty(k,o[k]);document.querySelector('meta[name=theme-color]').setAttribute('content',o['--bg']);}
+function switchView(v){document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));document.getElementById('view-'+v).classList.add('active');document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.v===v));window.scrollTo(0,0);}
+
+/* ===== utils / visuals ===== */
+function esc(s){return (s+'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function buzz(p){if(navigator.vibrate)try{navigator.vibrate(p);}catch(e){}}
+let toastT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1900);}
+let ceT;function showCelebrate(emoji,title,sub){document.getElementById('ceEmoji').textContent=emoji;document.getElementById('ceTitle').textContent=title;document.getElementById('ceSub').textContent=sub;document.getElementById('celebrate').classList.add('show');clearTimeout(ceT);ceT=setTimeout(hideCelebrate,2400);}
+function hideCelebrate(){document.getElementById('celebrate').classList.remove('show');}
+const cv=document.getElementById('confetti'),cx=cv.getContext('2d');function sizeCanvas(){cv.width=innerWidth;cv.height=innerHeight;}sizeCanvas();addEventListener('resize',sizeCanvas);
+let parts=[],raf=null;const CC=['#35c85a','#74d98a','#6e8bff','#ff9f43','#ff5d6c','#4ec2e6','#ff8fab','#b78bff'];
+function spawn(n,power){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=power*(0.4+Math.random()*0.9);parts.push({x:innerWidth/2,y:innerHeight*0.42,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-power*0.5,g:0.18+Math.random()*0.1,s:5+Math.random()*6,c:CC[i%CC.length],rot:Math.random()*6,vr:(Math.random()-.5)*.4,life:1});}if(!raf)raf=requestAnimationFrame(tick);}
+function tick(){cx.clearRect(0,0,cv.width,cv.height);parts.forEach(p=>{p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.life-=0.008;cx.save();cx.globalAlpha=Math.max(0,p.life);cx.translate(p.x,p.y);cx.rotate(p.rot);cx.fillStyle=p.c;cx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6);cx.restore();});parts=parts.filter(p=>p.life>0&&p.y<cv.height+40);if(parts.length)raf=requestAnimationFrame(tick);else{raf=null;cx.clearRect(0,0,cv.width,cv.height);}}
+function bigConfetti(){spawn(140,16);}function miniConfetti(){spawn(55,12);}
+
+/* ===== reminders ===== */
+let lastTickMin='';
+function reminderTick(){const d=new Date(),hm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');if(hm===lastTickMin)return;lastTickMin=hm;const tk=todayKey();activeHabits().forEach(h=>{if(h.reminder===hm&&isDueToday(h)&&!done(h,tk)){if('Notification'in window&&Notification.permission==='granted'){try{new Notification('習慣養成 · 提醒',{body:h.emoji+' '+h.name+' —— 該打卡囉！'});}catch(e){}}toast('⏰ 提醒：'+h.name);}});}
+setInterval(reminderTick,30000);
+
+/* ===== listeners ===== */
+document.getElementById('focusInput').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=e.target.value.trim();if(v){addFocus(v);e.target.value='';}}});
+document.getElementById('ideaInput').addEventListener('keydown',e=>{if(e.key==='Enter')addIdea();});
+document.getElementById('reflectInput').addEventListener('input',e=>{const tk=todayKey();state.reflectByDay[tk]=state.reflectByDay[tk]||{};state.reflectByDay[tk].text=e.target.value;save();});
+document.getElementById('dayTodoInput').addEventListener('keydown',e=>{if(e.key==='Enter')addDayTodo();});
+document.getElementById('dayReflect').addEventListener('input',e=>{if(!curDay)return;state.reflectByDay[curDay]=state.reflectByDay[curDay]||{};state.reflectByDay[curDay].text=e.target.value;save();});
+['habitModal','goalModal','modeModal','tplModal','dayModal'].forEach(id=>document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)document.getElementById(id).classList.remove('show');}));
+
+/* seed */
+if(state.habits.length===0&&!localStorage.getItem(KEY)){
+  const gd=new Date();gd.setDate(gd.getDate()+30);
+  state.goals=[{id:'g1',name:'30 天養成晨間節奏',targetDate:dayKey(gd),emoji:'🌅',color:'#35c85a',createdAt:todayKey()}];
+  state.habits=[
+    {id:'h1',name:'喝水',emoji:'💧',color:'#4ec2e6',type:'count',goal:8,unit:'杯',freq:'daily',days:[],reminder:null,goalId:null,slot:'any',history:{},archived:false},
+    {id:'h2',name:'運動 30 分鐘',emoji:'🏃',color:'#35c85a',type:'build',goal:1,unit:'',freq:'daily',days:[],reminder:null,goalId:'g1',slot:'morning',history:{},archived:false},
+    {id:'h3',name:'閱讀 20 分鐘',emoji:'📚',color:'#ff9f43',type:'build',goal:1,unit:'',freq:'daily',days:[],reminder:null,goalId:'g1',slot:'evening',history:{},archived:false},
+    {id:'h4',name:'背英文單字',emoji:'🔤',color:'#6e8bff',type:'count',goal:5,unit:'個',freq:'daily',days:[],reminder:null,goalId:null,slot:'noon',history:{},archived:false},
+  ];
+  state.modes=[{id:'m1',name:'高效模式',emoji:'⚡',habitIds:['h2','h3','h4']},{id:'m2',name:'放鬆模式',emoji:'🌿',habitIds:['h1','h3']}];
+}
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+applyMode(state.settings.mode);applyTheme(state.settings.theme);render();
+</script>
+</body>
+</html>
