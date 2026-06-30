@@ -627,6 +627,18 @@ function spawn(n,power){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=
 function tick(){cx.clearRect(0,0,cv.width,cv.height);parts.forEach(p=>{p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.life-=0.008;cx.save();cx.globalAlpha=Math.max(0,p.life);cx.translate(p.x,p.y);cx.rotate(p.rot);cx.fillStyle=p.c;cx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6);cx.restore();});parts=parts.filter(p=>p.life>0&&p.y<cv.height+40);if(parts.length)raf=requestAnimationFrame(tick);else{raf=null;cx.clearRect(0,0,cv.width,cv.height);}}
 function bigConfetti(){spawn(140,16);}function miniConfetti(){spawn(55,12);}
 
+/* ===== focus timer ===== */
+let tHabit=null,tRemain=0,tRunning=false,tIv=null;
+function openTimer(e,id){if(e)e.stopPropagation();const h=state.habits.find(x=>x.id===id);if(!h)return;tHabit=id;document.getElementById('tEmoji').textContent=h.emoji;document.getElementById('tName').textContent=h.name;setTimerMins(10);document.getElementById('timerOverlay').classList.add('show');document.querySelectorAll('#tPresets .tpreset').forEach(o=>{o.onclick=()=>setTimerMins(+o.dataset.m);});}
+function setTimerMins(m){stopTimer();tRemain=m*60;updateClock();updatePlay();document.querySelectorAll('#tPresets .tpreset').forEach(o=>o.classList.toggle('sel',+o.dataset.m===m));}
+function updateClock(){const m=Math.floor(tRemain/60),s=tRemain%60;document.getElementById('tClock').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+function updatePlay(){document.getElementById('tPlay').textContent=tRunning?'❚❚':'▶';}
+function toggleTimer(){if(tRunning)stopTimer();else startTimer();updatePlay();}
+function startTimer(){if(tRunning)return;tRunning=true;tIv=setInterval(()=>{tRemain--;if(tRemain<=0){tRemain=0;updateClock();completeTimer();return;}updateClock();},1000);}
+function stopTimer(){tRunning=false;if(tIv){clearInterval(tIv);tIv=null;}}
+function completeTimer(){stopTimer();const h=state.habits.find(x=>x.id===tHabit);if(h){const tk=todayKey();if(h.type==='count')h.history[tk]=h.goal;else h.history[tk]=true;}document.getElementById('timerOverlay').classList.remove('show');render();miniConfetti();buzz([20,40,60]);toast('⏱ 專注完成，已打卡！');}
+function closeTimer(){stopTimer();document.getElementById('timerOverlay').classList.remove('show');}
+
 /* ===== reminders ===== */
 let lastTickMin='';
 function reminderTick(){const d=new Date(),hm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');if(hm===lastTickMin)return;lastTickMin=hm;const tk=todayKey();activeHabits().forEach(h=>{if(h.reminder===hm&&isDueToday(h)&&!done(h,tk)){if('Notification'in window&&Notification.permission==='granted'){try{new Notification('習慣養成 · 提醒',{body:h.emoji+' '+h.name+' —— 該打卡囉！'});}catch(e){}}toast('⏰ 提醒：'+h.name);}});}
