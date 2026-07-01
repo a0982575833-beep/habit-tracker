@@ -222,7 +222,7 @@
     <div class="mode-bar" id="modeBar"></div>
 
     <div class="section-title"><h2>今日聚焦 <span>Focus · 最多 3 件</span></h2></div>
-    <div class="card"><div class="focus-list" id="focusList"></div><div class="focus-add"><input id="focusInput" type="text" placeholder="輸入今天最重要的一件事…" maxlength="60"></div></div>
+    <div class="card"><div class="focus-list" id="focusList"></div><div class="focus-add"><input id="focusInput" type="text" enterkeyhint="done" placeholder="輸入今天最重要的一件事…" maxlength="60"><button class="btn sm" onclick="addFocusInput()">加</button></div></div>
 
     <div class="section-title"><h2>今日習慣 <span>Habits</span></h2>
       <div class="title-btns">
@@ -651,6 +651,12 @@ document.getElementById('reflectInput').addEventListener('input',e=>{const tk=to
 document.getElementById('dayTodoInput').addEventListener('keydown',e=>{if(e.key==='Enter')addDayTodo();});
 document.getElementById('dayReflect').addEventListener('input',e=>{if(!curDay)return;state.reflectByDay[curDay]=state.reflectByDay[curDay]||{};state.reflectByDay[curDay].text=e.target.value;save();});
 ['habitModal','goalModal','modeModal','tplModal','dayModal'].forEach(id=>document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)document.getElementById(id).classList.remove('show');}));
+/* mobile: 送出鈕 + 鍵盤 Enter 不跳欄 */
+function addFocusInput(){const el=document.getElementById('focusInput');const v=el.value.trim();if(v){addFocus(v);el.value='';}el.blur();}
+document.querySelectorAll('input[type=text],input[type=number]').forEach(i=>i.setAttribute('enterkeyhint','done'));
+document.getElementById('hName').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveHabit();}});
+document.getElementById('gName').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveGoal();}});
+document.getElementById('mName').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveMode();}});
 
 /* seed */
 if(state.habits.length===0&&!localStorage.getItem(KEY)){
